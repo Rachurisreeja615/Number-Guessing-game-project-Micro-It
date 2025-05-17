@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Guessing Game</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f8ff;
+            color: #333;
+        }
+        
+        .game-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        
+        .instructions {
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+        
+        .input-container {
+            margin: 1.5rem 0;
+        }
+        
+        input[type="number"] {
+            padding: 0.5rem;
+            font-size: 1.2rem;
+            width: 80px;
+            text-align: center;
+            border: 2px solid #3498db;
+            border-radius: 5px;
+        }
+        
+        button {
+            padding: 0.5rem 1.5rem;
+            font-size: 1rem;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 0 0.5rem;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .message {
+            margin: 1.5rem 0;
+            font-size: 1.2rem;
+            min-height: 1.5rem;
+        }
+        
+        .attempts {
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        
+        .success {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        
+        .error {
+            color: #e74c3c;
+        }
+        
+        .guess-history {
+            margin-top: 1.5rem;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Number Guessing Game</h1>
+        <p class="instructions">
+            I'm thinking of a number between 1 and 100.<br>
+            Can you guess what it is?
+        </p>
+        
+        <div class="input-container">
+            <input type="number" id="guess-input" min="1" max="100" placeholder="1-100">
+            <button id="guess-btn">Guess</button>
+            <button id="reset-btn">New Game</button>
+        </div>
+        
+        <div class="message" id="message"></div>
+        <div class="guess-history" id="guess-history"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const guessInput = document.getElementById('guess-input');
+            const guessBtn = document.getElementById('guess-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const messageEl = document.getElementById('message');
+            const guessHistoryEl = document.getElementById('guess-history');
+            
+            let targetNumber;
+            let attempts;
+            let guessHistory;
+            
+            // Initialize the game
+            function initGame() {
+                targetNumber = Math.floor(Math.random() * 100) + 1;
+                attempts = 0;
+                guessHistory = [];
+                
+                guessInput.value = '';
+                messageEl.textContent = '';
+                messageEl.className = 'message';
+                guessHistoryEl.textContent = '';
+                
+                guessInput.disabled = false;
+                guessBtn.disabled = false;
+                
+                console.log('Target number:', targetNumber); // For debugging
+            }
+            
+            // Handle guess submission
+            function handleGuess() {
+                const userGuess = parseInt(guessInput.value);
+                
+                // Validate input
+                if (isNaN(userGuess) || userGuess < 1 || userGuess > 100) {
+                    messageEl.textContent = 'Please enter a valid number between 1 and 100';
+                    messageEl.className = 'message error';
+                    return;
+                }
+                
+                attempts++;
+                guessHistory.push(userGuess);
+                
+                // Check if guess is correct
+                if (userGuess === targetNumber) {
+                    messageEl.textContent = `Congratulations! You guessed the number in ${attempts} attempts!`;
+                    messageEl.className = 'message success';
+                    guessInput.disabled = true;
+                    guessBtn.disabled = true;
+                } else if (userGuess < targetNumber) {
+                    messageEl.textContent = 'Too low! Try a higher number.';
+                    messageEl.className = 'message';
+                } else {
+                    messageEl.textContent = 'Too high! Try a lower number.';
+                    messageEl.className = 'message';
+                }
+                
+                // Update guess history
+                guessHistoryEl.textContent = `Your guesses: ${guessHistory.join(', ')}`;
+                guessInput.value = '';
+                guessInput.focus();
+            }
+            
+            // Event listeners
+            guessBtn.addEventListener('click', handleGuess);
+            resetBtn.addEventListener('click', initGame);
+            
+            // Allow pressing Enter to submit guess
+            guessInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handleGuess();
+                }
+            });
+            
+            // Initialize the game when page loads
+            initGame();
+        });
+    </script>
+</body>
+</html>
